@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { processZeffyWebhookPayment } from "@/lib/zeffy";
+import { isValidZeffyWebhookToken, processZeffyWebhookPayment } from "@/lib/zeffy";
 
 export async function POST(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const secret = process.env.ZEFFY_WEBHOOK_SECRET;
     // Fail closed: if no secret is configured, reject rather than accept anonymous
     // webhooks (which could create donations).
-    if (!secret || searchParams.get("token") !== secret) {
+    if (!isValidZeffyWebhookToken(searchParams.get("token"), process.env.ZEFFY_WEBHOOK_SECRET)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

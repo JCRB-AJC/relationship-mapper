@@ -4,6 +4,23 @@ import { recalcFundraiserTotal } from "@/lib/fundraiser-total";
 const ZEFFY_API_BASE = "https://api.zeffy.com/api/v1";
 
 /**
+ * Check the `token` query param on an incoming Zeffy webhook against the
+ * configured secret. Fails closed when no secret is configured.
+ *
+ * Both sides are trimmed: until September 2026 the stored secret carried a
+ * trailing newline, so a strict comparison rejected every real webhook and no
+ * Zeffy donation was ever recorded. Whitespace is never meaningful in the token.
+ */
+export function isValidZeffyWebhookToken(
+  token: string | null | undefined,
+  secret: string | null | undefined
+): boolean {
+  const expected = secret?.trim();
+  if (!expected) return false;
+  return token?.trim() === expected;
+}
+
+/**
  * Store a Zeffy API key for an office.
  */
 export async function storeZeffyApiKey(
