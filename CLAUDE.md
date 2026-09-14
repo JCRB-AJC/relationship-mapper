@@ -41,8 +41,9 @@
 - **Database:** PostgreSQL via Prisma ORM (Prisma 6, standard `prisma-client-js` generator)
 - **Auth:** NextAuth.js (v5 beta)
 - **Styling:** Tailwind CSS
-- **Hosting:** Vercel (auto-deploys from `main` branch; every PR gets a preview URL)
-- **Repository:** Public on GitHub at `ethan-kaseff/relationship-mapper`
+- **Hosting:** Vercel team `jcrb-ajc`, project `relationship-mapper` (auto-deploys from `main` branch; every PR gets a preview URL). Production: `https://jcrb-relationship-mapper.vercel.app`
+- **Database hosting:** Neon, installed as a Vercel marketplace integration on the `jcrb-ajc` team (resource `relationship-mapper-db`)
+- **Repository:** Public on GitHub at `JCRB-AJC/relationship-mapper` (moved from `ethan-kaseff/relationship-mapper` in September 2026 — see `MIGRATION-LOG-2026-09.md`)
 - **Node:** 22.x (see `.github/workflows/ci.yml`)
 
 ## Git & Deployment Flow

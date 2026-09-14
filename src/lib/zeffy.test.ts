@@ -4,6 +4,7 @@ import {
   syncZeffyDonations,
   syncZeffyContacts,
   processZeffyWebhookPayment,
+  isValidZeffyWebhookToken,
 } from "./zeffy";
 
 // ─── Prisma mock ──────────────────────────────────────────────────────────────
@@ -478,5 +479,37 @@ describe("processZeffyWebhookPayment", () => {
         }),
       })
     );
+  });
+});
+
+// ─── isValidZeffyWebhookToken ────────────────────────────────────────────────
+
+describe("isValidZeffyWebhookToken", () => {
+  it("accepts a matching token", () => {
+    expect(isValidZeffyWebhookToken("abc123", "abc123")).toBe(true);
+  });
+
+  it("accepts a token when the stored secret has a trailing newline", () => {
+    // The production secret carried a stray "\n" until September 2026, which
+    // made a strict comparison reject every real webhook.
+    expect(isValidZeffyWebhookToken("abc123", "abc123\n")).toBe(true);
+  });
+
+  it("ignores surrounding whitespace on the incoming token", () => {
+    expect(isValidZeffyWebhookToken("  abc123 ", "abc123")).toBe(true);
+  });
+
+  it("rejects a wrong token", () => {
+    expect(isValidZeffyWebhookToken("nope", "abc123")).toBe(false);
+  });
+
+  it("rejects a missing token", () => {
+    expect(isValidZeffyWebhookToken(null, "abc123")).toBe(false);
+  });
+
+  it("fails closed when no secret is configured", () => {
+    expect(isValidZeffyWebhookToken("abc123", undefined)).toBe(false);
+    expect(isValidZeffyWebhookToken("", "")).toBe(false);
+    expect(isValidZeffyWebhookToken("", "   \n")).toBe(false);
   });
 });
